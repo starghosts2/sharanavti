@@ -42,7 +42,736 @@
 }
 </style/>
 <title>Шаранавты Арена 2.0</title>
+<link type="image/x-icon" href="favicon.ico" rel="shortcut icon"><style>
+.closing-button {
+  text-decoration: none;
+  display: inline-block;
+  margin: 10px;
+  color: white;
+  box-shadow: 0 0 0 2px white;
+  padding: 20px 0;
+  width: 150px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  position: relative;
+  overflow: hidden;
+  
+}
+.closing-button span {
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  z-index: 5;
+}
+.closing-button:before, .closing-button:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.closing-button:before {
+  transform: translateX(-100%);
+  background: #7289da;
+  transition: transform .3s cubic-bezier(.55, .055, .675, .19);
+}
+.closing-button:after {
+  background: #5169bd;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.16, .73, .58, .62) .3s;
+}
+.closing-button:hover:before, .closing-button:hover:after {
+  transform: translateX(0);
+}
+</style/>
+<title>Шаранавты Арена 2.0</title>
 <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+<link type="Image/x-icon" href="favicon.ico" rel="icon">
+<img src="menu.png" width="100%" height="100%" style="position:absolute;top:0px;left:0px">
+<canvas id="ctx" style="position:absolute;top:0px;left:0px"></canvas>
+<a href="https://discord.gg/zxxARur6ka" id="discordbut" class="closing-button"style="position:absolute;top:0px;left:0px;width:350px;display:none"><span>Дискорд сервер игры</span></a>
+<button id="btnq"><img src="flipW.bmp" style="vertical-align:middle;position:absolute;bottom:10px"> </button>
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="dat.gui.min.js"></script>
+<script>
+var WIDTH2 = window.innerWidth 
+var HEIGHT2 = window.innerHeight
+  ctx.width  = window.innerWidth 
+  ctx.height = window.innerHeight
+var sound={}
+sound.green_hils= new Audio()
+sound.green_hils.src='green_hils.wav'
+sound.green_hils.volume=0.2
+
+
+  
+  
+  
+  
+  var color_green = new THREE.MeshBasicMaterial({color:0x7fe000,vertexColors:THREE.FaceColors})
+  var ploskost=new THREE.PlaneGeometry(855,855,32,32)
+for(var i = 0; i < ploskost.faces.length; i++){
+ploskost.faces[i].color.setRGB(Math.random(),Math.random(),Math.random())
+}
+var poll = new THREE.Mesh(ploskost,color_green)
+
+
+var blockbox=new THREE.BoxGeometry(1,1,1)
+
+//var pers2 = new THREE.Mesh(blockbox,color_green)
+
+
+var selectcharacter=null
+var character={}
+
+
+
+btnq.onclick=function(){
+console.log(112313)
+}
+
+var rendrer = new THREE.WebGLRenderer({canvas:ctx,antialias: true,alpha: true})
+rendrer.setClearColor(0x57d7eb,0)
+var controlcamera={}
+controlcamera.field_of_view = 45
+controlcamera.sound = 0.0//0.2
+
+var camcontroll=0
+controlcamera.rotation_and_zoom =function(){
+if(camcontroll===0){
+  controls.enableZoom = true;
+  controls.enableRotate  = true;
+camcontroll = 1
+}else{
+  controls.enableZoom = false;
+  controls.enableRotate  = false;
+camcontroll = 0
+}
+}
+var gui = new dat.GUI()
+gui.add(controlcamera,'field_of_view').min(10).max(120).step(1)
+gui.add(controlcamera,'sound').min(0).max(1).step(0.1)
+gui.add(controlcamera,'rotation_and_zoom')
+
+var camera = new THREE.PerspectiveCamera(controlcamera.field_of_view,window.innerWidth/window.innerHeight,0.1,5000)
+var scena = new THREE.Scene()
+var ambientl = new THREE.AmbientLight(0xffffff,0.2)
+scena.add(ambientl)
+    const color = 0xffe3b0;
+    const intensity = 1.5;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(5, 10, 2);
+    scena.add(light);
+    scena.add(light.target);
+
+var mouc = new THREE.Vector2()
+var vec = new THREE.Vector3()
+var planenormal = new THREE.Vector3()
+var plane = new THREE.Plane()
+var raycaster = new THREE.Raycaster()
+
+//var roote2=0
+  function makeLabelCanvas(baseWidth, size, name, color, root) {
+    const borderSize = 2;
+    root.ctx = document.createElement('canvas').getContext('2d');
+    const font =  `${size}px bold sans-serif`;
+    root.ctx.font = font;
+    // measure how long the name will be
+    const textWidth = root.ctx.measureText(name).width;
+
+    const doubleBorderSize = borderSize * 2;
+    const width = baseWidth + doubleBorderSize;
+    const height = size + doubleBorderSize;
+    root.ctx.canvas.width = width;
+    root.ctx.canvas.height = height;
+	//console.log(width,height)
+	  //ctx.canvas.width  = window.innerWidth 
+   //ctx.canvas.height = window.innerHeight
+
+    // need to set font again after resizing canvas
+    //root.ctx.font = font;
+    //root.ctx.textBaseline = 'middle';
+    //root.ctx.textAlign = 'center';
+
+    root.ctx.fillStyle = color;
+    //root.ctx.fillRect(-1000, 0, 1000, height);
+
+    // scale to fit but don't stretch
+    //const scaleFactor = Math.min(1, baseWidth / textWidth);
+    //root.ctx.translate(width / 2, height / 2);
+    //root.ctx.scale(scaleFactor, 1);
+    //root.ctx.fillStyle = 'white';
+    //root.ctx.fillText(name, 0, 0);
+
+    return root.ctx.canvas;
+  }
+
+  function makePerson(name, colorteam, root) {
+  if(name===character.kigi.name){
+  var x=0 
+  var labelWidth=2500 
+  var size= 380
+  var posy = 38
+  root.scalhp=25
+  }
+  else if(name===character.eren.name){
+    var x=0 
+  var labelWidth=1320
+  var size= 100
+    var posy = 25
+	root.scalhp=13.3
+  }
+  else if(name===character.hage.name){
+    var x=0 
+  var labelWidth=155
+  var size= 9
+    var posy = 3
+	root.scalhp=1.59
+  }
+  var color = '#2af779'
+  if(colorteam===0)
+  color = '#f72a5d'
+  else if(colorteam===1)
+  color = '#2af779'
+    root.canvas = makeLabelCanvas(labelWidth, size, name, color, root);
+    root.texture2 = new THREE.CanvasTexture(root.canvas);
+    // because our canvas is likely not a power of 2
+    // in both dimensions set the filtering appropriately.
+    root.texture2.minFilter = THREE.LinearFilter;
+    root.texture2.wrapS = THREE.ClampToEdgeWrapping;
+    root.texture2.wrapT = THREE.ClampToEdgeWrapping;
+
+    root.labelMaterial = new THREE.SpriteMaterial({
+      map: root.texture2,
+      transparent: true,
+    });
+	root.texture2.needsUpdate = true;
+    const bodyMaterial = new THREE.MeshPhongMaterial({
+      color,
+      flatShading: true,
+    });
+
+    //const root = new THREE.Object3D();
+    //root.position.x = x;
+
+    //const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    //root.add(body);
+    //body.position.y = bodyHeight / 2;
+
+    //const head = new THREE.Mesh(headGeometry, bodyMaterial);
+    //root.add(head);
+    //head.position.y = bodyHeight + headRadius * 1.1;
+
+    // if units are meters then 0.01 here makes size
+    // of the label into centimeters.
+    const labelBaseScale = 0.01;
+    root.label = new THREE.Sprite(root.labelMaterial);
+	//root.canvas.width=2504
+    root.add(root.label);
+	
+    root.label.position.y = posy
+
+    root.label.scale.x = root.canvas.width  * labelBaseScale;
+    root.label.scale.y = root.canvas.height * labelBaseScale;
+
+    //scena.add(root);
+	//roote2=root
+    //return root;
+  }
+  //makePerson(-3, 150, 32, 'Purple People er', 'purple');
+
+
+
+var anglepers=0
+var gamestart2 = function(){
+//selectcharacter.scene=pers3.scene
+selectcharacter=character_preload
+for(var i in character){
+if(character[i]!==selectcharacter){
+if(gerebyovka%2===0){
+character[i].team=0
+character[i].scene.position.x=-50
+character[i].scene.position.y=0
+character[i].waypoint.position.z=-50
+
+}
+else if(gerebyovka%2===1){
+character[i].team=1
+character[i].scene.position.x=+50
+character[i].scene.position.y=0
+character[i].waypoint.position.z=50
+
+}
+
+gerebyovka++
+}
+character[i].scene.lookAt(character[i].waypoint.position.x,character[i].waypoint.position.y,character[i].waypoint.position.z)//!!
+makePerson(character[i].name, character[i].team, character[i].scene);
+}
+
+selectcharacter.team=1
+selectcharacter.scene.position.x=+50
+selectcharacter.scene.position.y=0
+
+rendrer.setClearColor(0x57d7eb,1)
+
+camera.position.set(0,150,150)
+}
+var character_menu_position=100002
+var character_preload = character.kigi
+var gerebyovka = 0
+var gamestart = function(clientx,clienty){
+//console.log(clientx,ctx.width-50,ctx.width+50,clienty,ctx.height,ctx.height+100)
+/*
+if(clientx>ctx.width/2-50&&clientx<ctx.width/2+50&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+selectcharacter=character.kigi
+gamestart2()
+}
+
+else if(clientx>ctx.width/2-390&&clientx<ctx.width/2-340&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+selectcharacter=character.eren
+gamestart2()
+console.log(1111)
+}
+else if(clientx>ctx.width/2+390&&clientx<ctx.width/2+440&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+selectcharacter=character.eren
+gamestart2()
+console.log(22222)
+}
+*/
+if(clientx>ctx.width/2-390&&clientx<ctx.width/2-340&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+character_menu_position--
+console.log(1111)
+}
+else if(clientx>ctx.width/2+390&&clientx<ctx.width/2+440&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+character_menu_position++
+console.log(22222)
+}
+if(character_menu_position%3===0){
+character.kigi.scene.position.x=10000
+character.kigi.scene.position.y=120
+character.kigi.scene.scale.set(1, 1, 1);
+character.eren.scene.position.x=9953
+character.eren.scene.position.y=135
+character.eren.scene.scale.set(1.5, 1.5, 1.5);
+character.hage.scene.position.x=10047
+character.hage.scene.position.y=135
+character.hage.scene.scale.set(12, 12, 12);
+character_preload = character.kigi
+}
+if(character_menu_position%3===1){
+character.kigi.scene.position.x=9953
+character.kigi.scene.position.y=135
+character.kigi.scene.scale.set(0.8, 0.8, 0.8);
+character.eren.scene.position.x=10047
+character.eren.scene.position.y=135
+character.eren.scene.scale.set(1.5, 1.5, 1.5);
+character.hage.scene.position.x=10000
+character.hage.scene.position.y=120
+character.hage.scene.scale.set(15, 15, 15);
+character_preload = character.hage
+}
+if(character_menu_position%3===2){
+character.kigi.scene.position.x=10047
+character.kigi.scene.position.y=135
+character.kigi.scene.scale.set(0.8, 0.8, 0.8);
+character.eren.scene.position.x=10000
+character.eren.scene.position.y=120
+character.eren.scene.scale.set(1.8, 1.8, 1.8);
+character.hage.scene.position.x=9953
+character.hage.scene.position.y=135
+character.hage.scene.scale.set(12, 12, 12);
+character_preload = character.eren
+}
+if(clientx>ctx.width/2-50&&clientx<ctx.width/2+50&&clienty>ctx.height/2&&clienty<ctx.height/2+250){
+character.kigi.scene.scale.set(1, 1, 1);
+character.eren.scene.scale.set(1.8, 1.8, 1.8);
+character.hage.scene.scale.set(15, 15, 15);
+gamestart2()
+}
+}
+document.onmousedown = function(event){
+if(event.clientY>105){
+if(selectcharacter===null){
+gamestart(event.clientX,event.clientY)
+}else{
+mouc.x=(event.clientX/window.innerWidth) * 2 - 1
+mouc.y=(event.clientY/window.innerHeight) * 2 - 1
+mouc.y=-mouc.y
+planenormal.copy(camera.position).normalize()
+
+plane.constant=-0
+plane.normal.x=0
+plane.normal.y=1
+plane.normal.z=0
+raycaster.setFromCamera(mouc,camera)
+raycaster.ray.intersectPlane(plane,vec)
+
+ sound.green_hils.play()
+if(camcontroll===0){
+selectcharacter.waypoint.position.copy(vec)
+selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
+var uzevibral=0
+for(var i in character){
+if(character[i]!==selectcharacter){
+if(selectcharacter.waypoint.position.distanceTo(character[i].scene.position)>20){
+
+
+selectcharacter.waypoint.target=null
+
+
+console.log('untargeted')
+//break
+}else{
+if(selectcharacter.team!==character[i].team){
+selectcharacter.waypoint.target=character[i]
+
+console.log('targeted')
+break
+
+}
+}
+}
+}
+//if(selectcharacter!==null){//!!
+
+//}
+}
+}
+}
+
+}
+
+document.onmousemove = function(event){
+if(event.clientY>105&&selectcharacter===null){
+
+}
+}
+function startup() {
+  var el = document.getElementById("ctx")[0];
+  el.addEventListener("touchstart", handleStart, false);
+  el.addEventListener("touchend", handleEnd, false);
+  el.addEventListener("touchcancel", handleCancel, false);
+  el.addEventListener("touchmove", handleMove, false);
+}
+
+var ongoingTouches = [];
+
+document.addEventListener("touchstart", touchHandler);
+document.addEventListener("touchmove", touchHandler);
+function touchHandler(e) {
+if(e.touches&&e.touches[0].pageY>105) {
+if(selectcharacter===null){
+gamestart(e.touches[0].pageX,e.touches[0].pageY)
+}
+mouc.x=(e.touches[0].pageX/window.innerWidth) * 2 - 1
+mouc.y=(e.touches[0].pageY/window.innerHeight) * 2 - 1
+mouc.y=-mouc.y
+planenormal.copy(camera.position).normalize()
+
+plane.constant=-0
+plane.normal.x=0
+plane.normal.y=1
+plane.normal.z=0
+raycaster.setFromCamera(mouc,camera)
+raycaster.ray.intersectPlane(plane,vec)
+
+ sound.green_hils.play()
+if(camcontroll===0){
+if(selectcharacter!==null){//!!
+selectcharacter.waypoint.position.copy(vec)
+selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
+}
+}
+}
+	}
+
+poll.rotation.x-=90*Math.PI/180
+
+
+
+
+//var pers = 0
+var pers3 = 0
+var loaddone = 0
+var loaddone2 = 0
+var loaddone3 = 0
+var loaddone4 = 0
+
+var glftload = new THREE.GLTFLoader()
+glftload.load('https://starghosts2.github.io/archive/cozy_lake/scene.gltf',(gltfScene)=>{
+var model = gltfScene.scene
+
+
+
+
+model.position.y-=22
+
+scena.add(model);
+loaddone2=1
+})
+var delitnutpotomnezabud={}
+glftload.load('https://starghosts2.github.io/archive/kgirls01/scene.gltf',(gltfScene)=>{
+//var model = gltfScene.scene
+
+
+
+
+character.kigi=gltfScene
+character.kigi.locker = new THREE.Clock()
+character.kigi.mixer = new THREE.AnimationMixer(character.kigi.scene)
+character.kigi.speed=1.5
+character.kigi.range=25
+character.kigi.autoattackdamage=5
+character.kigi.autoattackkd=0
+character.kigi.autoattackkdmax=12
+character.kigi.hp=100
+character.kigi.hpmax=100
+character.kigi.deathtime=19
+character.kigi.name='Киги'
+character.kigi.attackspeed=1
+character.kigi.waypoint = new THREE.Mesh(blockbox,color_green)
+character.kigi.waypoint.target=null
+scena.add(character.kigi.waypoint)
+character.kigi.animation={}
+character.kigi.animation._1 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 0, 60);
+character.kigi.animation._2 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 63, 85);
+character.kigi.animation._3 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 90, 137);
+character.kigi.animation._3_5 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 140, 180);
+character.kigi.animation._4 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 425, 450);// 425, 450             //180, 230
+character.kigi.animation._5 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 450, 451);
+character.kigi.animation._5_5 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 230, 240);//240, 300//300 350
+scena.add(character.kigi.scene);
+character.kigi.scene.scale.set(1, 1, 1);
+character.kigi.scene.position.x=10000
+character.kigi.scene.position.y=120
+loaddone=1
+startup()//!!
+})
+glftload.load('https://starghosts2.github.io/archive/rogue_-_game_character/scene.gltf',(gltfScene)=>{
+//var model = gltfScene.scene
+
+
+
+
+character.eren=gltfScene
+character.eren.locker = new THREE.Clock()
+character.eren.mixer = new THREE.AnimationMixer(character.eren.scene)
+character.eren.speed=1.5
+character.eren.range=35
+character.eren.autoattackdamage=5
+character.eren.autoattackkd=0
+character.eren.autoattackkdmax=16
+character.eren.hp=100
+character.eren.hpmax=100
+character.eren.deathtime=45
+character.eren.name='Эрен'
+character.eren.attackspeed=1
+character.eren.waypoint = new THREE.Mesh(blockbox,color_green)
+character.eren.waypoint.target=null
+scena.add(character.eren.waypoint)
+character.eren.animation={}
+character.eren.animation._1 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 0, 60);
+character.eren.animation._2 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 70, 90);
+character.eren.animation._3 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 280, 340);//270, 345);
+//character.eren.animation._3_5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 200, 235);
+character.eren.animation._4 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 380, 439);//235 270
+character.eren.animation._5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
+character.eren.scene.scale.set(1.5, 1.5, 1.5);
+scena.add(character.eren.scene);
+character.eren.scene.position.x=9953
+character.eren.scene.position.y=135
+loaddone3=1
+//startup()
+})
+glftload.load('https://starghosts2.github.io/archive/hgs_old__mage_pcconsole/scene.gltf',(gltfScene)=>{
+//var model = gltfScene.scene
+
+
+
+
+character.hage=gltfScene
+character.hage.locker = new THREE.Clock()
+character.hage.mixer = new THREE.AnimationMixer(character.hage.scene)
+//mixer3.timeScale = 1/5
+character.hage.speed=1.5
+character.hage.range=100
+character.hage.autoattackdamage=5
+character.hage.autoattackkd=0
+character.hage.autoattackkdmax=20
+character.hage.hp=100
+character.hage.hpmax=100
+character.hage.deathtime=10
+character.hage.name='Хагэ'
+character.hage.attackspeed=1
+character.hage.waypoint = new THREE.Mesh(blockbox,color_green)
+character.hage.waypoint.target=null
+scena.add(character.hage.waypoint)
+character.hage.animation={}
+character.hage.animation._1 = THREE.AnimationUtils.subclip(character.hage.animations[0], 'Take_001', 0, 200);
+character.hage.animation._2 = THREE.AnimationUtils.subclip(character.hage.animations[13], 'Take_00', 0, 350);
+character.hage.animation._3 = THREE.AnimationUtils.subclip(character.hage.animations[2], 'Take_001', 0, 137);
+//character.hage.animation._3_5 = THREE.AnimationUtils.subclip(character.hage.animations[0], 'Take_001', 140, 180);
+character.hage.animation._4 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 0, 13);
+character.hage.animation._5 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
+character.hage.scene.scale.set(12, 12, 12);
+scena.add(character.hage.scene);
+character.hage.scene.position.x=10047
+character.hage.scene.position.y=135
+loaddone4=1
+//startup()
+})
+
+
+
+//scena.add(pers2)
+
+
+
+var controls = new THREE.OrbitControls(camera, ctx);
+
+controls.target.set(0, 5, 0);
+controls.enablePan = false;
+controls.enableZoom = false;
+controls.enableRotate  = false;
+
+//document.onkeydown = function(event){
+//}
+//character.kigi.scene.add(testhand)
+
+
+camera.position.set(10000,150,150)
+
+
+var movement = function(characterset){
+characterset.autoattackkd--
+/*
+if(characterset===character.kigi)
+var mix = mixer
+if(characterset===character.eren)
+var mix = mixer2
+if(characterset===character.hage)
+var mix = mixer3
+*/
+if(characterset.hp>0){
+if(characterset.waypoint.target!==null){
+characterset.waypoint.position.x=characterset.waypoint.target.scene.position.x
+characterset.waypoint.position.z=characterset.waypoint.target.scene.position.z
+characterset.scene.lookAt(characterset.waypoint.position.x,characterset.waypoint.position.y,characterset.waypoint.position.z)
+if(characterset.scene.position.distanceTo(characterset.waypoint.position)<characterset.range){
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).play()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+if(characterset.autoattackkd<0){
+characterset.waypoint.target.hp-=characterset.autoattackdamage
+characterset.autoattackkd=characterset.autoattackkdmax
+}
+}else{
+characterset.scene.translateZ( characterset.speed )
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).play()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+}
+}else{
+if(characterset.scene.position.distanceTo(characterset.waypoint.position)>3){
+characterset.scene.translateZ( characterset.speed )
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).play()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+//mix.clipAction(characterset.animations[0]).play()
+}else{
+characterset.mixer.clipAction(characterset.animation._1).play()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+}
+}
+}else{
+if(characterset.deathtime>0){
+characterset.mixer.clipAction(characterset.animation._1).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._4).play()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.deathtime--
+}else{
+characterset.mixer.clipAction(characterset.animation._1).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._5).play()
+}
+}
+
+}
+setInterval(function(){
+rendrer.setSize( window.innerWidth, window.innerHeight )
+camera.fov=controlcamera.field_of_view
+camera.updateProjectionMatrix();
+sound.green_hils.volume=controlcamera.sound
+if(loaddone===1&&loaddone2===1&&loaddone3===1&&loaddone4===1){
+
+loadscreen.style.display='none'
+
+discordbut.style.display= 'inline-block'
+  ctx.width  = window.innerWidth 
+  ctx.height = window.innerHeight
+
+
+if(selectcharacter!==null){
+//selectcharacter.hp--
+//if(selectcharacter.hp<0)
+//selectcharacter.scene.ctx.clearRect(selectcharacter.hp,0,5000,5000)
+//selectcharacter.scene.ctx.fillRect(selectcharacter.hp,0,5000,5000)
+//character.eren.scene.position.x+=0.1
+//character.hage.scene.position.x+=0.1
+var oldX=selectcharacter.scene.position.x
+var oldY=selectcharacter.scene.position.y
+var oldZ=selectcharacter.scene.position.z
+for(var i in character){
+movement(character[i])
+}
+//movement(character.kigi)
+//movement(character.eren)
+//movement(character.hage)
+var diffX=selectcharacter.scene.position.x-oldX
+var diffY=selectcharacter.scene.position.y-oldY
+var diffZ=selectcharacter.scene.position.z-oldZ
+camera.position.x+=diffX
+camera.position.y+=diffY
+camera.position.z+=diffZ
+controls.target.set(selectcharacter.scene.position.x, selectcharacter.scene.position.y, selectcharacter.scene.position.z);
+controls.update();
+for(var i in character){
+character[i].scene.ctx.clearRect(0, 0, character[i].scene.ctx.canvas.width, character[i].scene.ctx.canvas.height)
+
+    character[i].scene.ctx.fillRect(0, 0, character[i].hp*character[i].scene.scalhp,200);
+character[i].scene.texture2.needsUpdate = true;
+}
+}else{
+for(var i in character){
+character[i].mixer.clipAction(character[i].animation._1).play()
+}
+}
+for(var i in character){
+character[i].mixer.update(character[i].locker.getDelta())
+}
+rendrer.render(scena,camera)
+
+}
+},1000/25)
+</script>
+<img src="loading.jpg" id="loadscreen" style="position:absolute;top:0px;left:0px" width="100%" height="100%">
 <link type="Image/x-icon" href="favicon.ico" rel="icon">
 <img src="menu.png" width="100%" height="100%" style="position:absolute;top:0px;left:0px">
 <canvas id="ctx" style="position:absolute;top:0px;left:0px"></canvas>
