@@ -1,0 +1,464 @@
+/* VARS */
+/* MIXINS */
+/* FONT */
+ @font-face {
+	 font-family: 'TitilliumWeb';
+
+	 font-weight: normal;
+	 font-style: normal;
+}
+ @font-face {
+	 font-family: 'TitilliumWebBold';
+
+	 font-weight: normal;
+	 font-style: normal;
+}
+/* INIT SOME ANIMATIONS */
+ @keyframes pulseBG {
+	 from {
+		 opacity: 0.3;
+	}
+	 to {
+		 opacity: 0.1;
+	}
+}
+ @keyframes blinkStroke {
+	 from {
+		 stroke-opacity: 1;
+	}
+	 to {
+		 stroke-opacity: 0;
+	}
+}
+ @keyframes pulseStroke {
+	 from {
+		 stroke-opacity: 1;
+	}
+	 to {
+		 stroke-opacity: 0.25;
+	}
+}
+/* MAIN */
+ html, body {
+	 width: 100%;
+	 height: 100%;
+	 margin: 0;
+	 padding: 0;
+	 background: #222;
+	 -webkit-user-select: none;
+	 user-select: none;
+	 color: #ececec;
+	 cursor: default;
+	 font-family: 'TitilliumWeb';
+}
+ #skills {
+	 width: 100%;
+	 height: 100%;
+}
+ #skills > div {
+	 margin: 10px;
+	 display: flex;
+	 flex-wrap: wrap;
+}
+ #skills > div > div {
+	 margin: 10px;
+}
+/* SKILL BUTTONS */
+ .skillbutton {
+	 position: relative;
+	 width: 60px;
+	 height: 60px;
+	 border: 1px solid #111;
+	 border-radius: 100%;
+	 background-size: contain;
+	 margin: 5px;
+	 cursor: pointer;
+}
+ .skillbutton:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+}
+/* keybind display */
+ .skillbutton:after {
+	 content: attr(data-keybind);
+	 position: absolute;
+	 bottom: 0;
+	 left: 0;
+	 height: 100%;
+	 width: 100%;
+	 color: #ececec;
+	 text-align: center;
+	 display: flex;
+	 align-items: flex-end;
+	 justify-content: center;
+	 padding-bottom: 10px;
+	 background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0) 30px, rgba(0, 0, 0, 0) 30px);
+	 border-radius: 0 0 600% 600%;
+	 font-weight: 600;
+	 text-shadow: -2px -2px 2px #000, 2px -2px 2px #000, -2px 2px 2px #000, 2px 2px 2px #000;
+	 font-size: 0.8em;
+}
+ .skillbutton svg {
+	 position: absolute;
+	 left: -5px;
+	 top: -5px;
+	 z-index: 1;
+}
+ .skillbutton .outer-bg {
+	 stroke: #111;
+}
+ .skillbutton .inner-bg {
+	 stroke: transparent;
+	 transition: all 0.2s east-in-out;
+}
+ .skillbutton:hover, .skillbutton:active {
+	 border: 1px solid rgba(0, 0, 0, 0.8);
+	 box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+}
+/* READY */
+ .skillbutton.ready:hover {
+	 filter: brightness(130%);
+}
+ .skillbutton.ready:active, .skillbutton.hit, .skillbutton.startCast, .skillbutton.recovery {
+	 filter: brightness(90%);
+}
+ .skillbutton.ready:active .inner-bg {
+	 stroke: cyan;
+	 animation: blinkStroke 0.5s steps(5, end) infinite alternate-reverse;
+}
+ .skillbutton.ready:active .inner-bg-blur {
+	 filter: url(#svg-blur);
+	 stroke: cyan;
+	 animation: blinkStroke 0.5s steps(5, end) infinite alternate-reverse;
+}
+/* UNAVAILABLE */
+ .skillbutton.unavailable, .skillbutton.noammo, .skillbutton.noweapon {
+	 filter: brightness(70%);
+}
+ .skillbutton.unavailable:hover, .skillbutton.noammo:hover, .skillbutton.noweapon:hover {
+	 filter: brightness(90%);
+}
+ .skillbutton.unavailable .inner-bg, .skillbutton.noammo .inner-bg, .skillbutton.noweapon .inner-bg {
+	 stroke: #c1000e;
+}
+ .skillbutton.unavailable:hover, .skillbutton.noammo:hover, .skillbutton.noweapon:hover {
+	 cursor: not-allowed;
+}
+ .skillbutton.unavailable:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url(''), linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+ .skillbutton.unavailable:hover:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url(''), linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+/* NO AMMO */
+ .skillbutton.noammo:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url('http://i.imgur.com/0cDKwT6.png'), linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+ .skillbutton.noammo:hover:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url('http://i.imgur.com/0cDKwT6.png'), linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+/* NO WEAPON */
+ .skillbutton.noweapon:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url('http://i.imgur.com/vc171Co.png'), linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+ .skillbutton.noweapon:hover:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-image: url('http://i.imgur.com/vc171Co.png'), linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+	 background-repeat: no-repeat, no-repeat;
+	 background-position: 50% 10px, center;
+	 background-size: 70% 70%, cover;
+	 filter: hue-rotate(-40deg);
+}
+/* START CAST */
+ .skillbutton.startCast .outer, .skillbutton.startCast .outer-blur {
+	 stroke: #ffdf00;
+	 animation: blinkStroke 0.25s infinite reverse;
+}
+/* ERROR */
+ .skillbutton.error .inner, .skillbutton.error .inner-blur {
+	 stroke: red;
+	 animation: blinkStroke 0.25s infinite;
+}
+ .skillbutton.error .inner-blur {
+	 filter: url(#svg-blur);
+}
+/* QUEUED */
+ .skillbutton.queued .outer {
+	 stroke: #ff7c24;
+}
+ .skillbutton.queued .inner, .skillbutton.queued .inner-blur, .skillbutton.queued .outer-blur {
+	 stroke: #ff7c24;
+	 animation: pulseStroke 0.75s steps(2, start) infinite alternate-reverse;
+}
+ .skillbutton.queued .outer, .skillbutton.queued .outer-blur {
+	 stroke: #ff7c24;
+	 animation: pulseStroke 0.75s steps(5, start) infinite alternate-reverse;
+}
+/* MODAL */
+ .skillbutton.modal .outer {
+	 stroke: #aaa;
+}
+ .skillbutton.modal .inner, .skillbutton.modal .inner-blur, .skillbutton.modal .outer-blur {
+	 stroke: #aaa;
+	 animation: pulseStroke 0.75s steps(5, start) infinite alternate-reverse;
+	 filter: url(#svg-blur);
+}
+ .skillbutton.modal:before {
+	 content: "";
+	 position: absolute;
+	 top: -5px;
+	 left: -3px;
+	 width: 110%;
+	 height: 110%;
+	 background: url(http://i.imgur.com/1WihOuv.png);
+	 background-size: cover;
+	 z-index: 3;
+	 box-shadow: initial;
+}
+/* PREP */
+ @keyframes prepBGPulse {
+	 from {
+		 background-color: rgba(255, 159, 25, .25);
+	}
+	 to {
+		 background-color: rgba(255, 159, 25, .1);
+	}
+}
+ .skillbutton.prep:before {
+	 content: attr(data-timer);
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 display: flex;
+	 justify-content: center;
+	 font-size: 1.3em;
+	 line-height: 2em;
+	 text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+	 color: #ff9f19;
+	 filter: brightness(120%);
+	 animation: prepBGPulse 0.75s steps(5, start) infinite alternate;
+}
+ .skillbutton.prep, .skillbutton.startCast, .skillbutton.hold, skillbutton.channel {
+	 filter: brightness(125%);
+}
+ .skillbutton.prep .inner, .skillbutton.prep .inner-blur {
+	 stroke: #ff9f19;
+}
+ .skillbutton.prep .inner-bg, .skillbutton.channel .inner-bg, .skillbutton.recovery .inner-bg {
+	 stroke: #000;
+}
+ .skillbutton.prep .outer, .skillbutton.prep .outer-blur, skillbutton.hold .outer, skillbutton.hold .outer-blur, .skillbutton.channel .outer, .skillbutton.channel .outer-blur {
+	 stroke: #d700ff;
+}
+/* CHANNEL */
+ @keyframes channelBGPulse {
+	 from {
+		 background-color: rgba(197, 255, 197, .8);
+	}
+	 to {
+		 background-color: rgba(197, 255, 197, .25);
+	}
+}
+ .skillbutton.channel:before {
+	 content: attr(data-timer);
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 display: flex;
+	 justify-content: center;
+	 font-size: 1.3em;
+	 line-height: 2em;
+	 text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+	 color: #c5ffc5;
+	 filter: brightness(120%);
+	 animation: prepBGPulse 0.75s steps(5, start) infinite alternate;
+}
+ .skillbutton.channel .inner, .skillbutton.channel .inner-blur {
+	 stroke: #c5ffc5;
+}
+ .skillbutton.channel .inner-bg, .skillbutton.channel .inner-blur {
+	 stroke: #ff9f19;
+}
+/* RECOVERY */
+ @keyframes recoveryBGPulse {
+	 from {
+		 background-color: rgba(25, 171, 255, .8);
+	}
+	 to {
+		 background-color: rgba(25, 171, 255, .25);
+	}
+}
+ .skillbutton.recovery:before {
+	 content: attr(data-timer);
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 display: flex;
+	 justify-content: center;
+	 font-size: 1.3em;
+	 line-height: 2em;
+	 text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+	 color: #19abff;
+	 filter: brightness(120%);
+	 animation: recoveryBGPulse 0.75s steps(5, start) infinite alternate;
+}
+ .skillbutton.recovery .inner, .skillbutton.recovery .inner-blur {
+	 stroke: #19abff;
+}
+/* HIT */
+ .skillbutton.hit:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background: #fff570;
+	 opacity: 0.3;
+}
+ .skillbutton.hit .outer, .skillbutton.hit .outer-blur {
+	 stroke: #fff570;
+	 filter: url(#svg-blur);
+	 animation: blinkStroke 0.25s infinite reverse;
+}
+/* HOLD */
+ .skillbutton.hold:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background: #fff570;
+	 animation: pulseBG 0.75s steps(5, start) infinite alternate;
+}
+ .skillbutton.hold .inner, .skillbutton.hold .inner-blur {
+	 stroke: #fff570;
+	 filter: url(#svg-blur);
+	 animation: pulseStroke 0.75s steps(5, start) infinite alternate;
+}
+/* INTERRUPTED */
+ .skillbutton.interrupted:before {
+	 content: '';
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 background-color: rgba(255, 0, 0, 0.2);
+}
+/* COOLDOWN */
+ .skillbutton.cooldown:before {
+	 content: attr(data-timer);
+	 border-radius: 100%;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 width: 100%;
+	 height: 100%;
+	 box-shadow: inset 5px 5px 1px rgba(255, 255, 255, 0.2), inset 2px 15px 5px rgba(255, 255, 255, 0.2), inset -1px -1px 2px rgba(0, 0, 0, 0.5), inset -3px -15px 45px rgba(0, 0, 0, 0.2), 1px 5px 30px -4px rgba(0, 0, 0, 1);
+	 display: flex;
+	 justify-content: center;
+	 font-size: 1.3em;
+	 line-height: 2em;
+	 text-shadow: -1px -1px 1px #000, 1px -1px 1px #000, -1px 1px 1px #000, 1px 1px 1px #000;
+	 color: white;
+	 filter: brightness(120%);
+	 background: rgba(0, 0, 0, 0.6);
+}
+ .skillbutton.cooldown .inner, .skillbutton.cooldown .inner-blur {
+	 stroke: white;
+	 opacity: 0.5;
+}
+ 
