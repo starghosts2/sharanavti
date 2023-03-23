@@ -40,18 +40,28 @@
 .closing-button:hover:before, .closing-button:hover:after {
   transform: translateX(0);
 }
-</style/>
+</style>
 <title>Шаранавты Арена 2.0</title>
 <link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
 <link type="Image/x-icon" href="favicon.ico" rel="icon">
+<link rel="stylesheet" href="ability.css">
 <img src="menu.png" width="100%" height="100%" style="position:absolute;top:0px;left:0px">
 <canvas id="ctx" style="position:absolute;top:0px;left:0px"></canvas>
 <a href="https://discord.gg/zxxARur6ka" id="discordbut" class="closing-button"style="position:absolute;top:0px;left:0px;width:350px;display:none"><span>Дискорд сервер игры</span></a>
-<button id="btnq"><img src="flipW.bmp" style="vertical-align:middle;position:absolute;bottom:10px"> </button>
+<!--<button id="btnq"><img src="abilityq.jpg" width="50px" height="50px" style="vertical-align:middle;position:absolute;bottom:10px;left:50px"> </button>-->
+<!--<button id="btnq"><img src="abilityw.png" width="50px" height="50px" style="vertical-align:middle;position:absolute;bottom:10px;left:150px"> </button>-->
+<!--<button id="btnq"><img src="abilitye.jpg" width="50px" height="50px" style="vertical-align:middle;position:absolute;bottom:10px;left:250px"> </button>-->
+<div id='skills' style='position:absolute;top:0px;left:0px;display:none'>
+
+<div id='interactive' class='skillbutton ready' data-keybind='Q' style='background-image: url(abilityq.jpg);vertical-align:middle;position:absolute;top:0px;left:0px'></div>
+<div id='interactive2' class='skillbutton ready' data-keybind='W' style='background-image: url(abilityw.png);vertical-align:middle;position:absolute;top:0px;left:100px'></div>
+<div id='interactive3' class='skillbutton ready' data-keybind='E' style='background-image: url(abilitye.jpg);vertical-align:middle;position:absolute;top:0px;left:200px'></div>
+</div>
 <script src="three.min.js"></script>
 <script src="OrbitControls.js"></script>
 <script src="GLTFLoader.js"></script>
 <script src="dat.gui.min.js"></script>
+<script src="ability.js"></script>
 <script>
 var WIDTH2 = window.innerWidth 
 var HEIGHT2 = window.innerHeight
@@ -65,8 +75,14 @@ sound.green_hils.volume=0.2
 
   
   
-  
-  
+  interactive.style.top=window.innerHeight-110//НЕСМОГ ВСЁ СРАЗУ ПЕРЕНЕСТИ ,, ПРИ ПЕРЕНОСЕ ВСЕГО ДИВА skills КАКИЕ ТО СТРАННЫЕ ПОЛЯ ПО БОКАМ ПОЛУЧАЮТСЯ(((9999 И ЕСЛИ ПИСАТЬ bottom А НЕ top ТО ВСЕ РАВНО КАКИЕ ТО ПОЛЯ
+    interactive2.style.top=window.innerHeight-110
+	    interactive3.style.top=window.innerHeight-110
+		interactive.style.left=window.innerWidth/2-100
+		interactive2.style.left=window.innerWidth/2
+		interactive3.style.left=window.innerWidth/2+100
+		resetInteractive(interactive2)
+		resetInteractive(interactive3)
   var color_green = new THREE.MeshBasicMaterial({color:0x7fe000,vertexColors:THREE.FaceColors})
   var ploskost=new THREE.PlaneGeometry(855,855,32,32)
 for(var i = 0; i < ploskost.faces.length; i++){
@@ -85,9 +101,7 @@ var character={}
 
 
 
-btnq.onclick=function(){
-console.log(112313)
-}
+
 
 var rendrer = new THREE.WebGLRenderer({canvas:ctx,antialias: true,alpha: true})
 rendrer.setClearColor(0x57d7eb,0)
@@ -100,10 +114,12 @@ controlcamera.rotation_and_zoom =function(){
 if(camcontroll===0){
   controls.enableZoom = true;
   controls.enableRotate  = true;
+  skills.style.display='none'
 camcontroll = 1
 }else{
   controls.enableZoom = false;
   controls.enableRotate  = false;
+  skills.style.display='block'
 camcontroll = 0
 }
 }
@@ -129,7 +145,26 @@ var planenormal = new THREE.Vector3()
 var plane = new THREE.Plane()
 var raycaster = new THREE.Raycaster()
 
+  var spellfloorgeometry = new THREE.PlaneGeometry(500, 500);
+    const spellfloorctx = document.createElement('canvas').getContext('2d');
+  spellfloorctx.canvas.width = 1024;
+  spellfloorctx.canvas.height = 1024;
+  var spellfloortexture = new THREE.CanvasTexture(spellfloorctx.canvas);
+  
+  var spellfloormaterial2 = new THREE.MeshBasicMaterial({color:0x7fe000})
+  var spellfloormaterial = new THREE.MeshBasicMaterial({
+    map: spellfloortexture,
+	transparent: true,
+  });
+  var spellfloor = new THREE.Mesh(spellfloorgeometry, spellfloormaterial);
+  scena.add(spellfloor);
+  spellfloor.rotation.x-=89.5*Math.PI/180
+    spellfloor.position.y+=1.4
+  //spellfloor.position.y+=1
 //var roote2=0
+spellfloorctx.fillStyle = '#a1f908';
+
+
   function makeLabelCanvas(baseWidth, size, name, color, root) {
     const borderSize = 2;
     root.ctx = document.createElement('canvas').getContext('2d');
@@ -245,6 +280,12 @@ var anglepers=0
 var gamestart2 = function(){
 //selectcharacter.scene=pers3.scene
 selectcharacter=character_preload
+if(selectcharacter===character.kigi){
+		interactive.style.backgroundImage='url(kigiq.jpg)'
+		interactive2.style.backgroundImage='url(kigiw.jpg)'
+		interactive3.style.backgroundImage='url(kigie.jpg)'
+		}
+		skills.style.display='block'
 for(var i in character){
 if(character[i]!==selectcharacter){
 if(gerebyovka%2===0){
@@ -349,13 +390,14 @@ character.hage.scene.scale.set(15, 15, 15);
 gamestart2()
 }
 }
-document.onmousedown = function(event){
-if(event.clientY>105){
+var splitcontrolls = function(clntx,clnty){
+if(clnty>105&&clnty<window.innerHeight-110){
 if(selectcharacter===null){
-gamestart(event.clientX,event.clientY)
+gamestart(clntx,clnty)
 }else{
-mouc.x=(event.clientX/window.innerWidth) * 2 - 1
-mouc.y=(event.clientY/window.innerHeight) * 2 - 1
+if(selectcharacter.qability===false&&selectcharacter.wability===false&&selectcharacter.eability===false){
+mouc.x=(clntx/window.innerWidth) * 2 - 1
+mouc.y=(clnty/window.innerHeight) * 2 - 1
 mouc.y=-mouc.y
 planenormal.copy(camera.position).normalize()
 
@@ -369,7 +411,7 @@ raycaster.ray.intersectPlane(plane,vec)
  sound.green_hils.play()
 if(camcontroll===0){
 selectcharacter.waypoint.position.copy(vec)
-selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
+//selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
 var uzevibral=0
 for(var i in character){
 if(character[i]!==selectcharacter){
@@ -396,14 +438,59 @@ break
 
 //}
 }
+}else if(selectcharacter.qability===true){
+selectcharacter.qabilityuse=true
+selectcharacter.qability=false
+selectcharacter.altvec.x=vec.x
+selectcharacter.altvec.y=vec.y
+selectcharacter.altvec.z=vec.z
+resetInteractive(interactive)
+if(selectcharacter===character.kigi){
+doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40+100,selectcharacter.qabilityusetimemax*40+290)//doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40-700,selectcharacter.qabilityusetimemax*40)//1400-700 =700 это время до удара, остальное время после удара
+}
+}else if(selectcharacter.wability===true){
+selectcharacter.wabilityuse=true
+selectcharacter.wability=false
+selectcharacter.altvec.x=vec.x
+selectcharacter.altvec.y=vec.y
+selectcharacter.altvec.z=vec.z
+resetInteractive(interactive2)
+if(selectcharacter===character.kigi){
+doRecovery(interactive2,12*40)
+}
+}else if(selectcharacter.eability===true){
+selectcharacter.eabilityuse=true
+selectcharacter.eability=false
+selectcharacter.altvec.x=vec.x
+selectcharacter.altvec.y=vec.y
+selectcharacter.altvec.z=vec.z
+resetInteractive(interactive3)
+if(selectcharacter===character.kigi){
+doPrep(interactive3,35*40)
 }
 }
+}
+}
+}
+document.onmousedown = function(event){
+splitcontrolls(event.clientX,event.clientY)
+
 
 }
 
 document.onmousemove = function(event){
-if(event.clientY>105&&selectcharacter===null){
+if(event.clientY>105&&selectcharacter!==null){
+mouc.x=(event.clientX/window.innerWidth) * 2 - 1
+mouc.y=(event.clientY/window.innerHeight) * 2 - 1
+mouc.y=-mouc.y
+planenormal.copy(camera.position).normalize()
 
+plane.constant=-0
+plane.normal.x=0
+plane.normal.y=1
+plane.normal.z=0
+raycaster.setFromCamera(mouc,camera)
+raycaster.ray.intersectPlane(plane,vec)
 }
 }
 function startup() {
@@ -419,6 +506,9 @@ var ongoingTouches = [];
 document.addEventListener("touchstart", touchHandler);
 document.addEventListener("touchmove", touchHandler);
 function touchHandler(e) {
+if(e.touches)
+splitcontrolls(e.touches[0].pageX,e.touches[0].pageY)
+/*
 if(e.touches&&e.touches[0].pageY>105) {
 if(selectcharacter===null){
 gamestart(e.touches[0].pageX,e.touches[0].pageY)
@@ -439,10 +529,11 @@ raycaster.ray.intersectPlane(plane,vec)
 if(camcontroll===0){
 if(selectcharacter!==null){//!!
 selectcharacter.waypoint.position.copy(vec)
-selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
+//selectcharacter.scene.lookAt(selectcharacter.waypoint.position.x,selectcharacter.waypoint.position.y,selectcharacter.waypoint.position.z)
 }
 }
 }
+*/
 	}
 
 poll.rotation.x-=90*Math.PI/180
@@ -469,6 +560,39 @@ model.position.y-=22
 scena.add(model);
 loaddone2=1
 })
+var aq1=function(){
+character.kigi.waypoint.position.set(vec.x,vec.y,vec.z)
+}
+var aq2=function(){
+character.eren.waypoint.position.set(vec.x,vec.y,vec.z)
+}
+var aq3=function(){
+character.hage.waypoint.position.set(vec.x,vec.y,vec.z)
+}
+var stun1 = 0
+var stun2 = 0
+var stun3 = 0
+glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
+stun1=gltfScene
+gltfScene.scene.scale.set(8, 8, 8);
+gltfScene.scene.position.y=45
+scena.add(gltfScene.scene);
+gltfScene.scene.visible=false
+})
+glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
+stun2=gltfScene
+gltfScene.scene.scale.set(8, 8, 8);
+gltfScene.scene.position.y=45
+scena.add(gltfScene.scene);
+gltfScene.scene.visible=false
+})
+glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
+stun3=gltfScene
+gltfScene.scene.scale.set(8, 8, 8);
+gltfScene.scene.position.y=45
+scena.add(gltfScene.scene);
+gltfScene.scene.visible=false
+})
 var delitnutpotomnezabud={}
 glftload.load('https://starghosts2.github.io/archive/kgirls01/scene.gltf',(gltfScene)=>{
 //var model = gltfScene.scene
@@ -489,6 +613,26 @@ character.kigi.hpmax=100
 character.kigi.deathtime=19
 character.kigi.name='Киги'
 character.kigi.attackspeed=1
+character.kigi.qability=false
+character.kigi.qabilityuse=false
+character.kigi.qabilitykd=-5
+character.kigi.qabilitykdmax=375
+character.kigi.qabilityusetime=35
+character.kigi.qabilityusetimemax=35
+character.kigi.wability=false
+character.kigi.wabilityuse=false
+character.kigi.wabilitykd=-5
+character.kigi.wabilitykdmax=375
+character.kigi.wabilityusetime=12
+character.kigi.wabilityusetimemax=12
+character.kigi.eability=false
+character.kigi.eabilityuse=false
+character.kigi.eabilitykd=-5
+character.kigi.eabilitykdmax=375
+character.kigi.eabilityusetime=35
+character.kigi.eabilityusetimemax=35
+character.kigi.altvec={}
+character.kigi.stun=-5
 character.kigi.waypoint = new THREE.Mesh(blockbox,color_green)
 character.kigi.waypoint.target=null
 scena.add(character.kigi.waypoint)
@@ -500,7 +644,11 @@ character.kigi.animation._3_5 = THREE.AnimationUtils.subclip(character.kigi.anim
 character.kigi.animation._4 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 425, 450);// 425, 450             //180, 230
 character.kigi.animation._5 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 450, 451);
 character.kigi.animation._5_5 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 230, 240);//240, 300//300 350
+character.kigi.animation._6 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 310, 360)
+character.kigi.animation._7 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 280, 300)
+character.kigi.animation._8 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 180, 220)
 scena.add(character.kigi.scene);
+character.kigi.scene.add(stun1.scene)
 character.kigi.scene.scale.set(1, 1, 1);
 character.kigi.scene.position.x=10000
 character.kigi.scene.position.y=120
@@ -526,6 +674,26 @@ character.eren.hpmax=100
 character.eren.deathtime=45
 character.eren.name='Эрен'
 character.eren.attackspeed=1
+character.eren.qability=false
+character.eren.qabilityuse=false
+character.eren.qabilitykd=0
+character.eren.qabilitykdmax=1000
+character.eren.qabilityusetime=50
+character.eren.qabilityusetimemax=50
+character.eren.wability=false
+character.eren.wabilityuse=false
+character.eren.wabilitykd=0
+character.eren.wabilitykdmax=1000
+character.eren.wabilityusetime=50
+character.eren.wabilityusetimemax=50
+character.eren.eability=false
+character.eren.eabilityuse=false
+character.eren.eabilitykd=0
+character.eren.eabilitykdmax=1000
+character.eren.eabilityusetime=50
+character.eren.eabilityusetimemax=50
+character.eren.altvec={}
+character.eren.stun=-5
 character.eren.waypoint = new THREE.Mesh(blockbox,color_green)
 character.eren.waypoint.target=null
 scena.add(character.eren.waypoint)
@@ -536,6 +704,12 @@ character.eren.animation._3 = THREE.AnimationUtils.subclip(character.eren.animat
 //character.eren.animation._3_5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 200, 235);
 character.eren.animation._4 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 380, 439);//235 270
 character.eren.animation._5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
+character.eren.animation._6 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
+character.eren.animation._7 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
+character.eren.animation._8 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
+stun2.scene.scale.set(4.0, 4.0, 4.0)
+stun2.scene.position.y-=16
+character.eren.scene.add(stun2.scene)
 character.eren.scene.scale.set(1.5, 1.5, 1.5);
 scena.add(character.eren.scene);
 character.eren.scene.position.x=9953
@@ -563,6 +737,26 @@ character.hage.hpmax=100
 character.hage.deathtime=10
 character.hage.name='Хагэ'
 character.hage.attackspeed=1
+character.hage.qability=false
+character.hage.qabilityuse=false
+character.hage.qabilitykd=0
+character.hage.qabilitykdmax=1000
+character.hage.qabilityusetime=50
+character.hage.qabilityusetimemax=50
+character.hage.wability=false
+character.hage.wabilityuse=false
+character.hage.wabilitykd=0
+character.hage.wabilitykdmax=1000
+character.hage.wabilityusetime=50
+character.hage.wabilityusetimemax=50
+character.hage.eability=false
+character.hage.eabilityuse=false
+character.hage.eabilitykd=0
+character.hage.eabilitykdmax=1000
+character.hage.eabilityusetime=50
+character.hage.eabilityusetimemax=50
+character.hage.altvec={}
+character.hage.stun=-5
 character.hage.waypoint = new THREE.Mesh(blockbox,color_green)
 character.hage.waypoint.target=null
 scena.add(character.hage.waypoint)
@@ -573,6 +767,12 @@ character.hage.animation._3 = THREE.AnimationUtils.subclip(character.hage.animat
 //character.hage.animation._3_5 = THREE.AnimationUtils.subclip(character.hage.animations[0], 'Take_001', 140, 180);
 character.hage.animation._4 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 0, 13);
 character.hage.animation._5 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
+character.hage.animation._6 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
+character.hage.animation._7 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
+character.hage.animation._8 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
+stun3.scene.scale.set(0.5, 0.5, 0.5)
+stun3.scene.position.y-=41.5
+character.hage.scene.add(stun3.scene)
 character.hage.scene.scale.set(12, 12, 12);
 scena.add(character.hage.scene);
 character.hage.scene.position.x=10047
@@ -593,9 +793,82 @@ controls.target.set(0, 5, 0);
 controls.enablePan = false;
 controls.enableZoom = false;
 controls.enableRotate  = false;
+var activateq = function(){
+if(selectcharacter.qabilitykd<0&&selectcharacter.hp>0){
+if(selectcharacter===character.kigi){
+if(character.kigi.qability===false){
+character.kigi.qability=true
+character.kigi.wability=false
+character.kigi.eability=false
+doQueue(interactive,12000000)//2 часа), после этого абилка визуально перестаёт быть активной
+resetInteractive(interactive2)
+resetInteractive(interactive3)
+}else{
+character.kigi.qability=false
+resetInteractive(interactive)
+}
+}
+}
+}
+var activatew = function(){
+if(selectcharacter.wabilitykd<0&&selectcharacter.hp>0){
+if(selectcharacter===character.kigi){
+if(character.kigi.wability===false){
+character.kigi.wability=true
+character.kigi.qability=false
+character.kigi.eability=false
+doQueue(interactive2,12000000)
+resetInteractive(interactive)
+resetInteractive(interactive3)
+}else{
+character.kigi.wability=false
+resetInteractive(interactive2)
+}
+}
+}
+}
+var activatee = function(){
+if(selectcharacter.eabilitykd<0&&selectcharacter.hp>0){
+if(selectcharacter===character.kigi){
+if(character.kigi.eability===false){
+character.kigi.eability=true
+character.kigi.wability=false
+character.kigi.qability=false
+doQueue(interactive3,12000000)
+resetInteractive(interactive2)
+resetInteractive(interactive)
+}else{
+character.kigi.eability=false
+resetInteractive(interactive3)
+}
+}
+}
+}
+interactive.onclick=function(){
+activateq()
+}
+interactive2.onclick=function(){
+activatew()
+}
+interactive3.onclick=function(){
+activatee()
+}
+document.onkeydown = function(event){
+if(selectcharacter!==null){
+if(event.code==='KeyQ')
+activateq()
+if(event.code==='KeyW')
+activatew()
+if(event.code==='KeyE')
+activatee()
+if(event.code==='Escape'){
+selectcharacter.qability=false
+selectcharacter.wability=false
+selectcharacter.eability=false
+}
+}
+}
 
-//document.onkeydown = function(event){
-//}
 //character.kigi.scene.add(testhand)
 
 
@@ -604,6 +877,10 @@ camera.position.set(10000,150,150)
 
 var movement = function(characterset){
 characterset.autoattackkd--
+characterset.qabilitykd--
+characterset.wabilitykd--
+characterset.eabilitykd--
+characterset.stun--
 /*
 if(characterset===character.kigi)
 var mix = mixer
@@ -613,11 +890,151 @@ if(characterset===character.hage)
 var mix = mixer3
 */
 if(characterset.hp>0){
+if(characterset.stun>0){
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._1).play()//стоит в стане
+if(characterset==character.kigi)
+stun1.scene.visible=true
+if(characterset==character.eren)
+stun2.scene.visible=true
+if(characterset==character.hage)
+stun3.scene.visible=true
+}else{
+if(characterset==character.kigi)
+stun1.scene.visible=false
+if(characterset==character.eren)
+stun2.scene.visible=false
+if(characterset==character.hage)
+stun3.scene.visible=false
+if(characterset.qabilityuse===true){
+if(characterset.qabilityusetime>0){
+console.log(334)
+characterset.qabilityusetime--
+if(characterset===character.kigi){
+characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).play()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+
+if(characterset.qabilityusetime===15){
+for(var i in character){
+if(character[i].team!==characterset.team){
+if(characterset.scene.position.distanceTo(character[i].scene.position)<43){
+	var diffx = characterset.altvec.x - characterset.scene.position.x
+	var diffz = characterset.altvec.z - characterset.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	var diffx2 = character[i].scene.position.x - characterset.scene.position.x
+	var diffz2 = character[i].scene.position.z - characterset.scene.position.z
+	var angle2 = Math.atan2(diffz2,diffx2)/Math.PI*180
+	var diff = angle2-angle
+if(diff>-90&&diff<90){
+character[i].hp-=50
+}
+}
+}
+}
+}
+}
+}else{
+console.log(433)
+characterset.qabilityuse=false
+characterset.qabilityusetime=characterset.qabilityusetimemax
+characterset.qabilitykd=characterset.qabilitykdmax
+resetInteractive(interactive)//доверяй, но проверяй. бывали случаи, когда кд на абилки не запускалось, а по факту было
+doCooldown(interactive,characterset.qabilitykdmax*40)
+}
+}else if(characterset.wabilityuse===true){
+if(characterset.wabilityusetime>0){
+characterset.wabilityusetime--
+if(characterset===character.kigi){
+characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).play()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+characterset.scene.translateZ( characterset.speed*3 )
+}
+}else{
+characterset.wabilityuse=false
+characterset.wabilityusetime=characterset.wabilityusetimemax
+characterset.wabilitykd=characterset.wabilitykdmax
+resetInteractive(interactive2)
+doCooldown(interactive2,characterset.wabilitykdmax*40)
+characterset.waypoint.position.x=characterset.scene.position.x
+characterset.waypoint.position.y=characterset.scene.position.y
+characterset.waypoint.position.z=characterset.scene.position.z
+}
+}else if(characterset.eabilityuse===true){
+if(characterset.eabilityusetime>0){
+characterset.eabilityusetime--
+if(characterset===character.kigi){
+characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
+characterset.mixer.clipAction(characterset.animation._8).play()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._4).stop()
+characterset.mixer.clipAction(characterset.animation._3).stop()
+characterset.mixer.clipAction(characterset.animation._2).stop()
+characterset.mixer.clipAction(characterset.animation._1).stop()
+if(characterset.eabilityusetime===5){
+//character.hage.team=0
+//character.hage.ctx.fillStyle='#f72a5d'
+character.hage.waypoint.position.set(character.eren.scene.position.x,character.eren.scene.position.y,character.eren.scene.position.z)
+}
+for(var i in character){
+if(character[i].team!==characterset.team){
+if(characterset.scene.position.distanceTo(character[i].scene.position)<43){
+	var diffx = characterset.altvec.x - characterset.scene.position.x
+	var diffz = characterset.altvec.z - characterset.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	var diffx2 = character[i].scene.position.x - characterset.scene.position.x
+	var diffz2 = character[i].scene.position.z - characterset.scene.position.z
+	var angle2 = Math.atan2(diffz2,diffx2)/Math.PI*180
+	var diff = angle2-angle
+if(diff>-90&&diff<90){
+character[i].stun=100
+}
+}
+}
+}
+
+}
+}else{
+characterset.eabilityuse=false
+characterset.eabilityusetime=characterset.eabilityusetimemax
+characterset.eabilitykd=characterset.eabilitykdmax
+resetInteractive(interactive3)
+doCooldown(interactive3,characterset.eabilitykdmax*40)
+}
+}else{
+characterset.scene.lookAt(characterset.waypoint.position.x,characterset.waypoint.position.y,characterset.waypoint.position.z)
 if(characterset.waypoint.target!==null){
+if(characterset.waypoint.target.hp>0){
 characterset.waypoint.position.x=characterset.waypoint.target.scene.position.x
 characterset.waypoint.position.z=characterset.waypoint.target.scene.position.z
-characterset.scene.lookAt(characterset.waypoint.position.x,characterset.waypoint.position.y,characterset.waypoint.position.z)
+}else{
+characterset.waypoint.target=null
+}
 if(characterset.scene.position.distanceTo(characterset.waypoint.position)<characterset.range){
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
 characterset.mixer.clipAction(characterset.animation._5).stop()
 characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).play()
@@ -629,19 +1046,25 @@ characterset.autoattackkd=characterset.autoattackkdmax
 }
 }else{
 characterset.scene.translateZ( characterset.speed )
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
 characterset.mixer.clipAction(characterset.animation._5).stop()
 characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
-characterset.mixer.clipAction(characterset.animation._2).play()
+characterset.mixer.clipAction(characterset.animation._2).play()//бежать к вейпоинту
 characterset.mixer.clipAction(characterset.animation._1).stop()
 }
 }else{
 if(characterset.scene.position.distanceTo(characterset.waypoint.position)>3){
 characterset.scene.translateZ( characterset.speed )
+characterset.mixer.clipAction(characterset.animation._8).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
 characterset.mixer.clipAction(characterset.animation._5).stop()
 characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
-characterset.mixer.clipAction(characterset.animation._2).play()
+characterset.mixer.clipAction(characterset.animation._2).play()//бежать к противнику
 characterset.mixer.clipAction(characterset.animation._1).stop()
 //mix.clipAction(characterset.animations[0]).play()
 }else{
@@ -650,6 +1073,11 @@ characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._8).stop()
+}
+}
 }
 }
 }else{
@@ -659,6 +1087,9 @@ characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._4).play()
 characterset.mixer.clipAction(characterset.animation._5).stop()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._8).stop()
 characterset.deathtime--
 }else{
 characterset.mixer.clipAction(characterset.animation._1).stop()
@@ -666,17 +1097,24 @@ characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._5).play()
+characterset.mixer.clipAction(characterset.animation._6).stop()
+characterset.mixer.clipAction(characterset.animation._7).stop()
+characterset.mixer.clipAction(characterset.animation._8).stop()
 }
 }
 
 }
+//var tesste=50
 setInterval(function(){
+
 rendrer.setSize( window.innerWidth, window.innerHeight )
 camera.fov=controlcamera.field_of_view
 camera.updateProjectionMatrix();
 sound.green_hils.volume=controlcamera.sound
 if(loaddone===1&&loaddone2===1&&loaddone3===1&&loaddone4===1){
-
+stun1.scene.rotation.y+=0.1
+stun2.scene.rotation.y+=0.1
+stun3.scene.rotation.y+=0.1
 loadscreen.style.display='none'
 
 discordbut.style.display= 'inline-block'
@@ -685,6 +1123,82 @@ discordbut.style.display= 'inline-block'
 
 
 if(selectcharacter!==null){
+//tesste++
+
+	spellfloorctx.clearRect(0, 0, spellfloorctx.canvas.width, spellfloorctx.canvas.height)
+	if(character.kigi.qability===true){
+	spellfloorctx.save()
+	spellfloorctx.translate(character.kigi.scene.position.x*2.04+512,character.kigi.scene.position.z*2.04+512)
+	var diffx = vec.x - character.kigi.scene.position.x//var diffx = character.kigi.waypoint.position.x - character.kigi.scene.position.x
+	var diffz = vec.z - character.kigi.scene.position.z//var diffz = character.kigi.waypoint.position.z - character.kigi.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	//console.log(angle)
+	spellfloorctx.rotate(angle*Math.PI/180)
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 80, 1.5 * Math.PI, 0.5 * Math.PI, false);
+	spellfloorctx.fill();
+	spellfloorctx.restore()
+	}
+	if(character.kigi.wability===true){
+	spellfloorctx.save()
+	spellfloorctx.translate(character.kigi.scene.position.x*2.04+512,character.kigi.scene.position.z*2.04+512)
+	var diffx = vec.x - character.kigi.scene.position.x//var diffx = character.kigi.waypoint.position.x - character.kigi.scene.position.x
+	var diffz = vec.z - character.kigi.scene.position.z//var diffz = character.kigi.waypoint.position.z - character.kigi.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	//console.log(angle)
+	spellfloorctx.rotate(angle*Math.PI/180)
+	spellfloorctx.beginPath();
+	spellfloorctx.moveTo(0, -20);
+	spellfloorctx.lineTo(110, -20);
+	//ctx.lineTo(50, -50)
+	spellfloorctx.lineTo(120, 0);
+	//ctx.lineTo(50, 50)
+	spellfloorctx.lineTo(110, 20);
+	spellfloorctx.lineTo(0, 20)
+	spellfloorctx.fill();
+	spellfloorctx.restore()
+	}
+	if(character.kigi.eability===true){
+	spellfloorctx.save()
+	spellfloorctx.translate(character.kigi.scene.position.x*2.04+512,character.kigi.scene.position.z*2.04+512)
+	var diffx = vec.x - character.kigi.scene.position.x//var diffx = character.kigi.waypoint.position.x - character.kigi.scene.position.x
+	var diffz = vec.z - character.kigi.scene.position.z//var diffz = character.kigi.waypoint.position.z - character.kigi.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	//console.log(angle)
+	spellfloorctx.rotate(angle*Math.PI/180)
+	spellfloorctx.beginPath();
+	spellfloorctx.moveTo(0, -60);
+	spellfloorctx.lineTo(70, -60);
+	//ctx.lineTo(50, -50)
+	spellfloorctx.lineTo(100, 0);
+	//ctx.lineTo(50, 50)
+	spellfloorctx.lineTo(70, 60);
+	spellfloorctx.lineTo(0, 60)
+	spellfloorctx.fill();
+	spellfloorctx.restore()
+	}
+	/*
+	spellfloorctx.moveTo(0, -20);
+	spellfloorctx.lineTo(110, -20);
+	//ctx.lineTo(50, -50)
+	spellfloorctx.lineTo(120, 0);
+	//ctx.lineTo(50, 50)
+	spellfloorctx.lineTo(110, 20);
+	spellfloorctx.lineTo(0, 20)
+	*/
+	/*
+	spellfloorctx.moveTo(0, -60);
+	spellfloorctx.lineTo(90, -60);
+	//ctx.lineTo(50, -50)
+	spellfloorctx.lineTo(120, 0);
+	//ctx.lineTo(50, 50)
+	spellfloorctx.lineTo(90, 60);
+	spellfloorctx.lineTo(0, 60)
+	*/
+    //spellfloorctx.fill();
+    //hp--
+	//spellfloorctx.restore()
+	spellfloortexture.needsUpdate = true;
 //selectcharacter.hp--
 //if(selectcharacter.hp<0)
 //selectcharacter.scene.ctx.clearRect(selectcharacter.hp,0,5000,5000)
