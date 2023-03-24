@@ -274,6 +274,13 @@ spellfloorctx.fillStyle = '#a1f908';
   }
   //makePerson(-3, 150, 32, 'Purple People er', 'purple');
 
+var sounds ={}
+sounds.kigiq=new Audio()
+sounds.kigiq.src='kigiq.mp3'
+sounds.kigiw=new Audio()
+sounds.kigiw.src='kigiw.mp3'
+sounds.kigie=new Audio()
+sounds.kigie.src='kigie.mp3'
 
 
 var anglepers=0
@@ -446,6 +453,7 @@ selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive)
 if(selectcharacter===character.kigi){
+sounds.kigiq.play()
 doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40+100,selectcharacter.qabilityusetimemax*40+290)//doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40-700,selectcharacter.qabilityusetimemax*40)//1400-700 =700 это время до удара, остальное время после удара
 }
 }else if(selectcharacter.wability===true){
@@ -456,6 +464,7 @@ selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive2)
 if(selectcharacter===character.kigi){
+sounds.kigiw.play()
 doRecovery(interactive2,12*40)
 }
 }else if(selectcharacter.eability===true){
@@ -466,6 +475,7 @@ selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive3)
 if(selectcharacter===character.kigi){
+sounds.kigie.play()
 doPrep(interactive3,35*40)
 }
 }
@@ -994,7 +1004,7 @@ characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._1).stop()
 if(characterset.eabilityusetime===5){
 //character.hage.team=0
-//character.hage.ctx.fillStyle='#f72a5d'
+//character.hage.scene.ctx.fillStyle='#f72a5d'
 //character.hage.waypoint.position.set(character.eren.scene.position.x,character.eren.scene.position.y,character.eren.scene.position.z)
 }
 for(var i in character){
