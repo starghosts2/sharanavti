@@ -73,6 +73,16 @@ sound.green_hils.src='green_hils.wav'
 sound.green_hils.volume=0.2
 
 
+//sound.kigiq=new Audio()
+//sound.kigiq.src='kigiq.mp3'
+//sound.kigiw=new Audio()
+//sound.kigiw.src='kigiw.mp3'
+//sound.kigie=new Audio()
+//sound.kigie.src='kigie.mp3'
+var images={}
+images.pois = new Image()
+images.pois.crossOrigin = "anonymous";
+images.pois.src='https://starghosts2.github.io/archive/pois/pois1.png'
   
   
   interactive.style.top=window.innerHeight-110//НЕСМОГ ВСЁ СРАЗУ ПЕРЕНЕСТИ ,, ПРИ ПЕРЕНОСЕ ВСЕГО ДИВА skills КАКИЕ ТО СТРАННЫЕ ПОЛЯ ПО БОКАМ ПОЛУЧАЮТСЯ(((9999 И ЕСЛИ ПИСАТЬ bottom А НЕ top ТО ВСЕ РАВНО КАКИЕ ТО ПОЛЯ
@@ -201,27 +211,14 @@ spellfloorctx.fillStyle = '#a1f908';
   }
 
   function makePerson(name, colorteam, root) {
-  if(name===character.kigi.name){
+
   var x=0 
-  var labelWidth=2500 
-  var size= 380
-  var posy = 38
-  root.scalhp=25
-  }
-  else if(name===character.eren.name){
-    var x=0 
-  var labelWidth=1320
-  var size= 100
-    var posy = 25
-	root.scalhp=13.3
-  }
-  else if(name===character.hage.name){
-    var x=0 
-  var labelWidth=155
-  var size= 9
-    var posy = 3
-	root.scalhp=1.59
-  }
+  var labelWidth=root.labelWidth
+  var size= root.size
+  var posy = root.posy
+  //root.scalhp=25
+  
+
   var color = '#2af779'
   if(colorteam===0)
   color = '#f72a5d'
@@ -274,13 +271,7 @@ spellfloorctx.fillStyle = '#a1f908';
   }
   //makePerson(-3, 150, 32, 'Purple People er', 'purple');
 
-var sounds ={}
-sounds.kigiq=new Audio()
-sounds.kigiq.src='kigiq.mp3'
-sounds.kigiw=new Audio()
-sounds.kigiw.src='kigiw.mp3'
-sounds.kigie=new Audio()
-sounds.kigie.src='kigie.mp3'
+
 
 
 var anglepers=0
@@ -291,6 +282,11 @@ if(selectcharacter===character.kigi){
 		interactive.style.backgroundImage='url(kigiq.jpg)'
 		interactive2.style.backgroundImage='url(kigiw.jpg)'
 		interactive3.style.backgroundImage='url(kigie.jpg)'
+		}
+else if(selectcharacter===character.eren){
+		interactive.style.backgroundImage='url(erenq.jpg)'
+		interactive2.style.backgroundImage='url(erenw.jpg)'
+		interactive3.style.backgroundImage='url(erene.jpg)'
 		}
 		skills.style.display='block'
 for(var i in character){
@@ -452,10 +448,11 @@ selectcharacter.altvec.x=vec.x
 selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive)
-if(selectcharacter===character.kigi){
-sounds.kigiq.play()
-doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40+100,selectcharacter.qabilityusetimemax*40+290)//doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40-700,selectcharacter.qabilityusetimemax*40)//1400-700 =700 это время до удара, остальное время после удара
-}
+selectcharacter.soundq.play()
+selectcharacter.iconq()
+//if(selectcharacter===character.kigi){
+//doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40+100,selectcharacter.qabilityusetimemax*40+290)//doPrepWithDisruption(interactive,selectcharacter.qabilityusetimemax*40-700,selectcharacter.qabilityusetimemax*40)//1400-700 =700 это время до удара, остальное время после удара
+//}
 }else if(selectcharacter.wability===true){
 selectcharacter.wabilityuse=true
 selectcharacter.wability=false
@@ -463,10 +460,11 @@ selectcharacter.altvec.x=vec.x
 selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive2)
-if(selectcharacter===character.kigi){
-sounds.kigiw.play()
-doRecovery(interactive2,12*40)
-}
+selectcharacter.soundw.play()
+selectcharacter.iconw()
+//if(selectcharacter===character.kigi){
+//doRecovery(interactive2,12*40)
+//}
 }else if(selectcharacter.eability===true){
 selectcharacter.eabilityuse=true
 selectcharacter.eability=false
@@ -474,10 +472,11 @@ selectcharacter.altvec.x=vec.x
 selectcharacter.altvec.y=vec.y
 selectcharacter.altvec.z=vec.z
 resetInteractive(interactive3)
-if(selectcharacter===character.kigi){
-sounds.kigie.play()
-doPrep(interactive3,35*40)
-}
+selectcharacter.sounde.play()
+selectcharacter.icone()
+//if(selectcharacter===character.kigi){
+//doPrep(interactive3,35*40)
+//}
 }
 }
 }
@@ -579,30 +578,24 @@ character.eren.waypoint.position.set(vec.x,vec.y,vec.z)
 var aq3=function(){
 character.hage.waypoint.position.set(vec.x,vec.y,vec.z)
 }
+var cutCircle = function(context, x, y, radius){
+    context.globalCompositeOperation = 'destination-out'
+    context.arc(x, y, radius, 0, Math.PI*2, true);
+    context.fill();
+}
+
 var stun1 = 0
-var stun2 = 0
-var stun3 = 0
-glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
-stun1=gltfScene
-gltfScene.scene.scale.set(8, 8, 8);
-gltfScene.scene.position.y=45
-scena.add(gltfScene.scene);
-gltfScene.scene.visible=false
+//var stun2 = 0
+//var stun3 = 0
+glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene1)=>{
+stun1=gltfScene1.scene
+gltfScene1.scene.scale.set(8, 8, 8);
+gltfScene1.scene.position.y=45
+scena.add(gltfScene1.scene);
+gltfScene1.scene.visible=false
 })
-glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
-stun2=gltfScene
-gltfScene.scene.scale.set(8, 8, 8);
-gltfScene.scene.position.y=45
-scena.add(gltfScene.scene);
-gltfScene.scene.visible=false
-})
-glftload.load('https://starghosts2.github.io/archive/stun/scene.gltf',(gltfScene)=>{
-stun3=gltfScene
-gltfScene.scene.scale.set(8, 8, 8);
-gltfScene.scene.position.y=45
-scena.add(gltfScene.scene);
-gltfScene.scene.visible=false
-})
+
+
 var delitnutpotomnezabud={}
 glftload.load('https://starghosts2.github.io/archive/kgirls01/scene.gltf',(gltfScene)=>{
 //var model = gltfScene.scene
@@ -615,14 +608,15 @@ character.kigi.locker = new THREE.Clock()
 character.kigi.mixer = new THREE.AnimationMixer(character.kigi.scene)
 character.kigi.speed=1.5
 character.kigi.range=25
-character.kigi.autoattackdamage=5
+character.kigi.autoattackdamage=50
 character.kigi.autoattackkd=0
 character.kigi.autoattackkdmax=12
-character.kigi.hp=100
-character.kigi.hpmax=100
+character.kigi.hp=1000
+character.kigi.hpmax=1000
 character.kigi.deathtime=19
 character.kigi.name='Киги'
 character.kigi.attackspeed=1
+character.kigi.calcspeed=0
 character.kigi.qability=false
 character.kigi.qabilityuse=false
 character.kigi.qabilitykd=-5
@@ -643,6 +637,19 @@ character.kigi.eabilityusetime=35
 character.kigi.eabilityusetimemax=35
 character.kigi.altvec={}
 character.kigi.stun=-5
+character.kigi.soundq=new Audio('kigiq.mp3')
+character.kigi.soundw=new Audio('kigiw.mp3')
+character.kigi.sounde=new Audio('kigie.mp3')
+character.kigi.iconq = doPrepWithDisruption.bind(null,interactive,character.kigi.qabilityusetimemax*40+100,character.kigi.qabilityusetimemax*40+290)
+character.kigi.iconw = doRecovery.bind(null,interactive2,12*40)
+character.kigi.icone = doPrep.bind(null,interactive3,35*40)
+//func1 = biglibraryfunc1.bind(null, data1, data2), or ..func1 = () => biglibraryfunc1(data1,data2)
+character.kigi.scene.labelWidth=2500 
+character.kigi.scene.size= 462
+character.kigi.scene.posy = 38
+character.kigi.scene.scalhp=25
+character.kigi.pois=2
+character.kigi.poistime=0
 character.kigi.waypoint = new THREE.Mesh(blockbox,color_green)
 character.kigi.waypoint.target=null
 scena.add(character.kigi.waypoint)
@@ -658,7 +665,8 @@ character.kigi.animation._6 = THREE.AnimationUtils.subclip(character.kigi.animat
 character.kigi.animation._7 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 280, 300)
 character.kigi.animation._8 = THREE.AnimationUtils.subclip(character.kigi.animations[0], 'Take_001', 180, 220)
 scena.add(character.kigi.scene);
-character.kigi.scene.add(stun1.scene)
+character.kigi.stun1 = stun1.clone()
+character.kigi.scene.add(character.kigi.stun1)
 character.kigi.scene.scale.set(1, 1, 1);
 character.kigi.scene.position.x=10000
 character.kigi.scene.position.y=120
@@ -676,34 +684,47 @@ character.eren.locker = new THREE.Clock()
 character.eren.mixer = new THREE.AnimationMixer(character.eren.scene)
 character.eren.speed=1.5
 character.eren.range=35
-character.eren.autoattackdamage=5
+character.eren.autoattackdamage=50
 character.eren.autoattackkd=0
 character.eren.autoattackkdmax=16
-character.eren.hp=100
-character.eren.hpmax=100
+character.eren.hp=1000
+character.eren.hpmax=1000
 character.eren.deathtime=45
 character.eren.name='Эрен'
 character.eren.attackspeed=1
+character.eren.calcspeed=0
 character.eren.qability=false
 character.eren.qabilityuse=false
 character.eren.qabilitykd=0
-character.eren.qabilitykdmax=1000
-character.eren.qabilityusetime=50
-character.eren.qabilityusetimemax=50
+character.eren.qabilitykdmax=375
+character.eren.qabilityusetime=25
+character.eren.qabilityusetimemax=25
 character.eren.wability=false
 character.eren.wabilityuse=false
 character.eren.wabilitykd=0
-character.eren.wabilitykdmax=1000
-character.eren.wabilityusetime=50
-character.eren.wabilityusetimemax=50
+character.eren.wabilitykdmax=375
+character.eren.wabilityusetime=30
+character.eren.wabilityusetimemax=30
 character.eren.eability=false
 character.eren.eabilityuse=false
 character.eren.eabilitykd=0
-character.eren.eabilitykdmax=1000
-character.eren.eabilityusetime=50
-character.eren.eabilityusetimemax=50
+character.eren.eabilitykdmax=375
+character.eren.eabilityusetime=25
+character.eren.eabilityusetimemax=25
 character.eren.altvec={}
 character.eren.stun=-5
+character.eren.soundq=new Audio('eren.wav')
+character.eren.soundw=new Audio('eren.wav')
+character.eren.sounde=new Audio('eren.wav')
+character.eren.iconq = doPrep.bind(null,interactive,character.eren.qabilityusetimemax*40)
+character.eren.iconw = doRecovery.bind(null,interactive2,character.eren.wabilityusetimemax*40)
+character.eren.icone = doPrep.bind(null,interactive3,character.eren.eabilityusetimemax*40)
+character.eren.scene.labelWidth=1320
+character.eren.scene.size= 245
+character.eren.scene.posy = 25
+character.eren.scene.scalhp=13.3
+character.eren.pois=0
+character.eren.poistime=0
 character.eren.waypoint = new THREE.Mesh(blockbox,color_green)
 character.eren.waypoint.target=null
 scena.add(character.eren.waypoint)
@@ -714,12 +735,13 @@ character.eren.animation._3 = THREE.AnimationUtils.subclip(character.eren.animat
 //character.eren.animation._3_5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 200, 235);
 character.eren.animation._4 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 380, 439);//235 270
 character.eren.animation._5 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
-character.eren.animation._6 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
-character.eren.animation._7 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
-character.eren.animation._8 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 439, 440);
-stun2.scene.scale.set(4.0, 4.0, 4.0)
-stun2.scene.position.y-=16
-character.eren.scene.add(stun2.scene)
+character.eren.animation._6 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 200, 235);
+character.eren.animation._7 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 340, 380);
+character.eren.animation._8 = THREE.AnimationUtils.subclip(character.eren.animations[0], 'Take_001', 200, 235);
+character.eren.stun1 = stun1.clone()
+character.eren.stun1.scale.set(4.0, 4.0, 4.0)
+character.eren.stun1.position.y-=16
+character.eren.scene.add(character.eren.stun1)
 character.eren.scene.scale.set(1.5, 1.5, 1.5);
 scena.add(character.eren.scene);
 character.eren.scene.position.x=9953
@@ -739,14 +761,15 @@ character.hage.mixer = new THREE.AnimationMixer(character.hage.scene)
 //mixer3.timeScale = 1/5
 character.hage.speed=1.5
 character.hage.range=100
-character.hage.autoattackdamage=5
+character.hage.autoattackdamage=50
 character.hage.autoattackkd=0
 character.hage.autoattackkdmax=20
-character.hage.hp=100
-character.hage.hpmax=100
+character.hage.hp=1000
+character.hage.hpmax=1000
 character.hage.deathtime=10
 character.hage.name='Хагэ'
 character.hage.attackspeed=1
+character.hage.calcspeed=0
 character.hage.qability=false
 character.hage.qabilityuse=false
 character.hage.qabilitykd=0
@@ -767,6 +790,18 @@ character.hage.eabilityusetime=50
 character.hage.eabilityusetimemax=50
 character.hage.altvec={}
 character.hage.stun=-5
+character.hage.soundq=new Audio('kigiq.mp3')
+character.hage.soundw=new Audio('kigiw.mp3')
+character.hage.sounde=new Audio('kigie.mp3')
+character.hage.iconq = doPrepWithDisruption.bind(null,interactive,character.hage.qabilityusetimemax*40+100,character.hage.qabilityusetimemax*40+290)
+character.hage.iconw = doRecovery.bind(null,interactive2,12*40)
+character.hage.icone = doPrep.bind(null,interactive3,35*40)
+character.hage.scene.labelWidth=155
+character.hage.scene.size= 26
+character.hage.scene.posy = 3
+character.hage.scene.scalhp=1.59
+character.hage.pois=0
+character.hage.poistime=0
 character.hage.waypoint = new THREE.Mesh(blockbox,color_green)
 character.hage.waypoint.target=null
 scena.add(character.hage.waypoint)
@@ -780,9 +815,10 @@ character.hage.animation._5 = THREE.AnimationUtils.subclip(character.hage.animat
 character.hage.animation._6 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
 character.hage.animation._7 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
 character.hage.animation._8 = THREE.AnimationUtils.subclip(character.hage.animations[3], 'Take_001', 13, 14);
-stun3.scene.scale.set(0.5, 0.5, 0.5)
-stun3.scene.position.y-=41.5
-character.hage.scene.add(stun3.scene)
+character.hage.stun1 = stun1.clone()
+character.hage.stun1.scale.set(0.5, 0.5, 0.5)
+character.hage.stun1.position.y-=41.5
+character.hage.scene.add(character.hage.stun1)
 character.hage.scene.scale.set(12, 12, 12);
 scena.add(character.hage.scene);
 character.hage.scene.position.x=10047
@@ -804,54 +840,54 @@ controls.enablePan = false;
 controls.enableZoom = false;
 controls.enableRotate  = false;
 var activateq = function(){
-if(selectcharacter.qabilitykd<0&&selectcharacter.hp>0){
-if(selectcharacter===character.kigi){
-if(character.kigi.qability===false){
-character.kigi.qability=true
-character.kigi.wability=false
-character.kigi.eability=false
+if(selectcharacter.qabilitykd<0&&selectcharacter.hp>0&&selectcharacter.stun<0){
+//if(selectcharacter===character.kigi){
+if(selectcharacter.qability===false){
+selectcharacter.qability=true
+selectcharacter.wability=false
+selectcharacter.eability=false
 doQueue(interactive,12000000)//2 часа), после этого абилка визуально перестаёт быть активной
 resetInteractive(interactive2)
 resetInteractive(interactive3)
 }else{
-character.kigi.qability=false
+selectcharacter.qability=false
 resetInteractive(interactive)
 }
-}
+//}
 }
 }
 var activatew = function(){
-if(selectcharacter.wabilitykd<0&&selectcharacter.hp>0){
-if(selectcharacter===character.kigi){
-if(character.kigi.wability===false){
-character.kigi.wability=true
-character.kigi.qability=false
-character.kigi.eability=false
+if(selectcharacter.wabilitykd<0&&selectcharacter.hp>0&&selectcharacter.stun<0){
+//if(selectcharacter===character.kigi){
+if(selectcharacter.wability===false){
+selectcharacter.wability=true
+selectcharacter.qability=false
+selectcharacter.eability=false
 doQueue(interactive2,12000000)
 resetInteractive(interactive)
 resetInteractive(interactive3)
 }else{
-character.kigi.wability=false
+selectcharacter.wability=false
 resetInteractive(interactive2)
 }
-}
+//}
 }
 }
 var activatee = function(){
-if(selectcharacter.eabilitykd<0&&selectcharacter.hp>0){
-if(selectcharacter===character.kigi){
-if(character.kigi.eability===false){
-character.kigi.eability=true
-character.kigi.wability=false
-character.kigi.qability=false
+if(selectcharacter.eabilitykd<0&&selectcharacter.hp>0&&selectcharacter.stun<0){
+//if(selectcharacter===character.kigi){
+if(selectcharacter.eability===false){
+selectcharacter.eability=true
+selectcharacter.wability=false
+selectcharacter.qability=false
 doQueue(interactive3,12000000)
 resetInteractive(interactive2)
 resetInteractive(interactive)
 }else{
-character.kigi.eability=false
+selectcharacter.eability=false
 resetInteractive(interactive3)
 }
-}
+//}
 }
 }
 interactive.onclick=function(){
@@ -891,6 +927,12 @@ characterset.qabilitykd--
 characterset.wabilitykd--
 characterset.eabilitykd--
 characterset.stun--
+characterset.stun1.rotation.y+=0.1
+characterset.poistime--
+if(characterset.poistime<0)
+characterset.pois=0
+
+characterset.hp-=characterset.pois
 /*
 if(characterset===character.kigi)
 var mix = mixer
@@ -909,24 +951,19 @@ characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._1).play()//стоит в стане
-if(characterset==character.kigi)
-stun1.scene.visible=true
-if(characterset==character.eren)
-stun2.scene.visible=true
-if(characterset==character.hage)
-stun3.scene.visible=true
+characterset.stun1.visible=true
+characterset.soundq.pause();
+characterset.soundq.currentTime = 0;
+characterset.soundw.pause();
+characterset.soundw.currentTime = 0;
+characterset.sounde.pause();
+characterset.sounde.currentTime = 0;
 }else{
-if(characterset==character.kigi)
-stun1.scene.visible=false
-if(characterset==character.eren)
-stun2.scene.visible=false
-if(characterset==character.hage)
-stun3.scene.visible=false
+characterset.stun1.visible=false
 if(characterset.qabilityuse===true){
 if(characterset.qabilityusetime>0){
 console.log(334)
 characterset.qabilityusetime--
-if(characterset===character.kigi){
 characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
 characterset.mixer.clipAction(characterset.animation._8).stop()
 characterset.mixer.clipAction(characterset.animation._7).stop()
@@ -936,6 +973,8 @@ characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._1).stop()
+if(characterset===character.kigi){
+
 
 if(characterset.qabilityusetime===15){
 for(var i in character){
@@ -949,7 +988,31 @@ if(characterset.scene.position.distanceTo(character[i].scene.position)<43){
 	var angle2 = Math.atan2(diffz2,diffx2)/Math.PI*180
 	var diff = angle2-angle
 if(diff>-90&&diff<90){
-character[i].hp-=50
+character[i].hp-=500
+}
+}
+}
+}
+}
+}
+if(characterset===character.eren){
+
+
+if(characterset.qabilityusetime===24){
+for(var i in character){
+if(character[i].team!==characterset.team){
+if(characterset.scene.position.distanceTo(character[i].scene.position)<80){
+	var diffx = characterset.altvec.x - characterset.scene.position.x
+	var diffz = characterset.altvec.z - characterset.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	var diffx2 = character[i].scene.position.x - characterset.scene.position.x
+	var diffz2 = character[i].scene.position.z - characterset.scene.position.z
+	var angle2 = Math.atan2(diffz2,diffx2)/Math.PI*180
+	var diff = angle2-angle
+if(diff>-32&&diff<32){
+character[i].hp-=80
+character[i].poistime=100
+character[i].pois+=1
 }
 }
 }
@@ -967,7 +1030,6 @@ doCooldown(interactive,characterset.qabilitykdmax*40)
 }else if(characterset.wabilityuse===true){
 if(characterset.wabilityusetime>0){
 characterset.wabilityusetime--
-if(characterset===character.kigi){
 characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
 characterset.mixer.clipAction(characterset.animation._8).stop()
 characterset.mixer.clipAction(characterset.animation._7).play()
@@ -977,7 +1039,27 @@ characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._1).stop()
+if(characterset===character.kigi){
+
 characterset.scene.translateZ( characterset.speed*3 )
+}
+if(characterset===character.eren){
+if(characterset.wabilityusetime===characterset.wabilityusetimemax-1)
+characterset.calcspeed=Math.sqrt(Math.pow(characterset.scene.position.x-vec.x,2) + Math.pow(characterset.scene.position.z-vec.z,2))
+if(characterset.wabilityusetime<23)
+characterset.scene.translateZ( characterset.calcspeed/22 )
+for(var i in character){
+if(character[i].team!==characterset.team){
+if(characterset.scene.position.distanceTo(character[i].scene.position)<30){
+
+if(character[i].pois===0)//проблемма в том, что при пролёте все время полёта снимается хп, нужно добавить параметр, чтобы противники, по которым уже попал эрен, не теряли хп при его пролёте
+character[i].hp-=200
+character[i].poistime=100
+character[i].pois=1//и получали +=1 а не 1
+
+}
+}
+}
 }
 }else{
 characterset.wabilityuse=false
@@ -992,7 +1074,7 @@ characterset.waypoint.position.z=characterset.scene.position.z
 }else if(characterset.eabilityuse===true){
 if(characterset.eabilityusetime>0){
 characterset.eabilityusetime--
-if(characterset===character.kigi){
+if(characterset!==character.eren)
 characterset.scene.lookAt(characterset.altvec.x,characterset.altvec.y,characterset.altvec.z)
 characterset.mixer.clipAction(characterset.animation._8).play()
 characterset.mixer.clipAction(characterset.animation._7).stop()
@@ -1002,6 +1084,8 @@ characterset.mixer.clipAction(characterset.animation._4).stop()
 characterset.mixer.clipAction(characterset.animation._3).stop()
 characterset.mixer.clipAction(characterset.animation._2).stop()
 characterset.mixer.clipAction(characterset.animation._1).stop()
+if(characterset===character.kigi){
+
 if(characterset.eabilityusetime===5){
 //character.hage.team=0
 //character.hage.scene.ctx.fillStyle='#f72a5d'
@@ -1024,6 +1108,28 @@ character[i].stun=100
 }
 }
 
+}
+if(characterset===character.eren){
+if(characterset.eabilityusetime===characterset.eabilityusetimemax-1){
+for(var i in character){
+if(character[i].team!==characterset.team){
+if(characterset.scene.position.distanceTo(character[i].scene.position)<50){
+
+//if(character[i].pois===0)
+//character[i].hp-=100//проблемма в том, что при пролёте все время полёта снимается хп, нужно добавить параметр, чтобы противники, по которым уже попал эрен, не теряли хп при его пролёте
+character[i].poistime=100
+character[i].pois=3//и получали +=1 а не 1
+
+}
+}
+}
+}
+}
+if(characterset===character.eren){
+if(characterset.eabilityusetime===24)
+character.eren.mixer.timeScale=-1
+if(characterset.eabilityusetime===1)
+character.eren.mixer.timeScale=1
 }
 }else{
 characterset.eabilityuse=false
@@ -1091,6 +1197,12 @@ characterset.mixer.clipAction(characterset.animation._8).stop()
 }
 }
 }else{
+characterset.soundq.pause();
+characterset.soundq.currentTime = 0;
+characterset.soundw.pause();
+characterset.soundw.currentTime = 0;
+characterset.sounde.pause();
+characterset.sounde.currentTime = 0;
 if(characterset.deathtime>0){
 characterset.mixer.clipAction(characterset.animation._1).stop()
 characterset.mixer.clipAction(characterset.animation._2).stop()
@@ -1122,9 +1234,6 @@ camera.fov=controlcamera.field_of_view
 camera.updateProjectionMatrix();
 sound.green_hils.volume=controlcamera.sound
 if(loaddone===1&&loaddone2===1&&loaddone3===1&&loaddone4===1){
-stun1.scene.rotation.y+=0.1
-stun2.scene.rotation.y+=0.1
-stun3.scene.rotation.y+=0.1
 loadscreen.style.display='none'
 
 discordbut.style.display= 'inline-block'
@@ -1149,6 +1258,30 @@ if(selectcharacter!==null){
 	spellfloorctx.fill();
 	spellfloorctx.restore()
 	}
+	if(character.eren.qability===true){
+	spellfloorctx.save()
+	spellfloorctx.translate(character.eren.scene.position.x*2.04+512,character.eren.scene.position.z*2.04+512)
+	var diffx = vec.x - character.eren.scene.position.x//var diffx = character.eren.waypoint.position.x - character.eren.scene.position.x
+	var diffz = vec.z - character.eren.scene.position.z//var diffz = character.eren.waypoint.position.z - character.eren.scene.position.z
+	var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	//console.log(angle)
+	spellfloorctx.rotate(angle*Math.PI/180)
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 120, -30*Math.PI/180, 30*Math.PI/180, false);
+	spellfloorctx.fill();
+	spellfloorctx.beginPath();
+	spellfloorctx.moveTo(-25, 0);
+	spellfloorctx.lineTo(105, -59);
+	spellfloorctx.lineTo(105, 59);
+	var gradient = spellfloorctx.createRadialGradient(0, 0, 20, 0, 0, 200);
+	gradient.addColorStop(0, "rgba(161,249,8,0)");
+	gradient.addColorStop(0.5, "#a1f908");
+	//gradient.addColorStop(1, "green");
+	spellfloorctx.fillStyle = gradient;
+	//'#a1f908'
+	spellfloorctx.fill();
+	spellfloorctx.restore()
+	}
 	if(character.kigi.wability===true){
 	spellfloorctx.save()
 	spellfloorctx.translate(character.kigi.scene.position.x*2.04+512,character.kigi.scene.position.z*2.04+512)
@@ -1166,6 +1299,46 @@ if(selectcharacter!==null){
 	spellfloorctx.lineTo(110, 20);
 	spellfloorctx.lineTo(0, 20)
 	spellfloorctx.fill();
+	spellfloorctx.restore()
+	}
+	if(character.eren.wability===true){
+	spellfloorctx.save()
+	spellfloorctx.translate(character.eren.scene.position.x*2.04+512,character.eren.scene.position.z*2.04+512)
+	//var diffx = vec.x - character.eren.scene.position.x//var diffx = character.eren.waypoint.position.x - character.eren.scene.position.x
+	//var diffz = vec.z - character.eren.scene.position.z//var diffz = character.eren.waypoint.position.z - character.eren.scene.position.z
+	//var angle = Math.atan2(diffz,diffx)/Math.PI*180
+	//console.log(angle)
+	//spellfloorctx.rotate(angle*Math.PI/180)
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 200, 0, 2 * Math.PI, false);
+	spellfloorctx.strokeStyle='#a1f908'
+	spellfloorctx.stroke();
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 200, 0, 2 * Math.PI, false);
+	var gradient = spellfloorctx.createRadialGradient(0, 0, 180, 0, 0, 240);
+	gradient.addColorStop(0.1, "rgba(161,249,8,0)");
+	gradient.addColorStop(1, "#a1f908");
+	//gradient.addColorStop(1, "green");
+	spellfloorctx.fillStyle = gradient;
+	//'#a1f908'
+	spellfloorctx.fill();
+	spellfloorctx.translate(-(character.eren.scene.position.x*2.04+512),-(character.eren.scene.position.z*2.04+512))
+	spellfloorctx.translate(vec.x*2.04+512,vec.z*2.04+512)
+	if(Math.sqrt(Math.pow(character.eren.scene.position.x-vec.x,2) + Math.pow(character.eren.scene.position.z-vec.z,2))<97){
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 20, 0, 2 * Math.PI, false);
+	spellfloorctx.strokeStyle='#a1f908'
+	spellfloorctx.stroke();
+	spellfloorctx.beginPath();
+	spellfloorctx.arc(0, 0, 20, 0, 2 * Math.PI, false);
+	var gradient2 = spellfloorctx.createRadialGradient(0, 0, 11, 0, 0, 28);
+	gradient2.addColorStop(0.3, "rgba(161,249,8,0)");
+	gradient2.addColorStop(1, "#a1f908");
+	//gradient.addColorStop(1, "green");
+	spellfloorctx.fillStyle = gradient2;
+	//'#a1f908'
+	spellfloorctx.fill();
+	}
 	spellfloorctx.restore()
 	}
 	if(character.kigi.eability===true){
@@ -1186,6 +1359,16 @@ if(selectcharacter!==null){
 	spellfloorctx.lineTo(0, 60)
 	spellfloorctx.fill();
 	spellfloorctx.restore()
+	}
+	if(character.eren.eability===true){
+	character.eren.eabilityuse=true
+character.eren.eability=false
+character.eren.altvec.x=vec.x
+character.eren.altvec.y=vec.y
+character.eren.altvec.z=vec.z
+resetInteractive(interactive3)
+character.eren.sounde.play()
+character.eren.icone()
 	}
 	/*
 	spellfloorctx.moveTo(0, -20);
@@ -1235,7 +1418,38 @@ controls.update();
 for(var i in character){
 character[i].scene.ctx.clearRect(0, 0, character[i].scene.ctx.canvas.width, character[i].scene.ctx.canvas.height)
 
-    character[i].scene.ctx.fillRect(0, 0, character[i].hp*character[i].scene.scalhp,200);
+    character[i].scene.ctx.fillRect(0, 0, character[i].hp/10*character[i].scene.scalhp,character[i].scene.scalhp*5);
+	if(character[i].pois===1)
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*42,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	else if(character[i].pois===2){
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*34,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*51,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	}
+	else if(character[i].pois===3){
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*42,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*26,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	character[i].scene.ctx.drawImage(images.pois,character[i].scene.scalhp*58,character[i].scene.scalhp*5,character[i].scene.scalhp*15,character[i].scene.scalhp*15)
+	}
+	/*
+	character[i].scene.ctx.save()
+	character[i].scene.ctx.fillStyle = 'purple'
+	//character[i].scene.ctx.fillRect(0, character[i].scene.scalhp*5, 50*character[i].scene.scalhp,character[i].scene.scalhp*8);
+	character[i].scene.ctx.beginPath()
+	character[i].scene.ctx.arc(character[i].scene.scalhp*15, character[i].scene.scalhp*12, character[i].scene.scalhp*7, 0, 2 * Math.PI)
+	character[i].scene.ctx.fill()
+	character[i].scene.ctx.clearRect(0,character[i].scene.scalhp*16,character[i].scene.scalhp*50,character[i].scene.scalhp*22)
+	character[i].scene.ctx.fillRect(character[i].scene.scalhp*9,character[i].scene.scalhp*15,character[i].scene.scalhp*2.5,character[i].scene.scalhp*5);
+	character[i].scene.ctx.fillRect(character[i].scene.scalhp*14,character[i].scene.scalhp*15,character[i].scene.scalhp*3,character[i].scene.scalhp*5);
+	character[i].scene.ctx.fillRect(character[i].scene.scalhp*19,character[i].scene.scalhp*15,character[i].scene.scalhp*2.5,character[i].scene.scalhp*5);
+	character[i].scene.ctx.fillStyle = 'black'
+	character[i].scene.ctx.beginPath()
+	character[i].scene.ctx.arc(character[i].scene.scalhp*12, character[i].scene.scalhp*10, character[i].scene.scalhp*1.5, 0, 2 * Math.PI)
+	character[i].scene.ctx.fill()
+	character[i].scene.ctx.beginPath()
+	character[i].scene.ctx.arc(character[i].scene.scalhp*18, character[i].scene.scalhp*10, character[i].scene.scalhp*1.5, 0, 2 * Math.PI)
+	character[i].scene.ctx.fill()
+	character[i].scene.ctx.restore()
+	*/
 character[i].scene.texture2.needsUpdate = true;
 }
 }else{
